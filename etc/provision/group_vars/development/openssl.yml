@@ -1,0 +1,10 @@
+---
+openssl_self_signed:
+- name: "{{ project_name }}"
+  domain: "{{ project_hostname }}"
+  unit: "Web"
+  country: "US"
+  state: "TX"
+  city: "Austin"
+  organization: "Novuso"
+  email: "admin@novuso.com"

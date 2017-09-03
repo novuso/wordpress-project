@@ -1,0 +1,8 @@
+/.vagrant/
+/wp-config.php
+/public/
+/vendor/
+/*.sublime-project
+/*.sublime-workspace
+/.idea/
+/nbproject/

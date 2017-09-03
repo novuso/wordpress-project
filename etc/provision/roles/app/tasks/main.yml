@@ -1,0 +1,43 @@
+---
+- include: "base.yml"
+- include: "gitconfig.yml"
+
+- name: "vagrant directory change"
+  lineinfile:
+    dest: "/home/{{ ansible_user_id }}/.bashrc"
+    line: "cd {{ app_root_dir }}"
+    state: present
+
+- name: "composer install"
+  composer:
+    command: "install"
+    working_dir: "{{ app_root_dir }}"
+    no_dev: false
+    optimize_autoloader: false
+
+- name: "public directory"
+  file:
+    dest: "{{ app_root_dir }}/public"
+    state: "directory"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: "0755"
+
+- name: "download wordpress-cli"
+  become: yes
+  get_url:
+    url: "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
+    dest: "/usr/local/bin/wp"
+    mode: 0755
+
+- name: "download wordpress"
+  shell: "wp core download --path=public --version=latest --force"
+  args:
+    chdir: "{{ app_root_dir }}"
+    creates: "{{ app_root_dir }}/public/index.php"
+
+- name: "generate wp-config.php"
+  shell: "wp config create --dbname=wordpress --dbuser=wordpress --dbpass=wordpress --dbhost=127.0.0.1 --dbprefix=app_ && mv -f {{ app_root_dir }}/public/wp-config.php {{ app_root_dir }}/wp-config.php"
+  args:
+    chdir: "{{ app_root_dir }}/public"
+    creates: "{{ app_root_dir }}/wp-config.php"

@@ -1,0 +1,42 @@
+---
+nginx_server_configs:
+- name: "{{ project_name }}"
+  servers:
+  - listen: ["80"]
+    server_name: "{{ project_hostname }} {{ project_aliases }}"
+    return: "301 https://{{ project_hostname }}$request_uri"
+  - listen: ["443"]
+    server_name: "{{ project_aliases }}"
+    ssl: "on"
+    ssl_certificate: "/srv/ssl/certs/{{ project_name }}.crt"
+    ssl_certificate_key: "/srv/ssl/private/{{ project_name }}.key"
+    return: "301 https://{{ project_hostname }}$request_uri"
+  - listen: ["443"]
+    server_name: "{{ project_hostname }}"
+    root: "{{ project_public }}"
+    index: "index.php"
+    charset: "utf-8"
+    access_log: "/var/log/nginx/{{ project_name }}.log"
+    error_log: "/var/log/nginx/{{ project_name }}-error.log error"
+    ssl: "on"
+    ssl_certificate: "/srv/ssl/certs/{{ project_name }}.crt"
+    ssl_certificate_key: "/srv/ssl/private/{{ project_name }}.key"
+    includes: ["h5bp/basic.conf"]
+    locations:
+    - match: "= /favicon.ico"
+      access_log: "off"
+      log_not_found: "off"
+    - match: "= /robots.txt"
+      access_log: "off"
+      log_not_found: "off"
+    - match: "/"
+      locations:
+      - match: "~* ^(.+)-(?:\\d+)\\.?(?:\\d+)?\\.?(?:\\d+)?\\.(js|css|png|jpe?g|gif|ico|cur|gz|g?zip|svg|svgz|mp4|ogg|flv|mov|ogv|webm|htc|pdf|rtf|txt|docx?|ppt)$"
+        try_files: "$uri $1.$2 /index.php$is_args$args"
+      - match: "/"
+        try_files: "$uri /index.php$is_args$args"
+    - match: "~ \\.php$"
+      fastcgi_split_path_info: "^(.+\\.php)(/.+)$"
+      fastcgi_pass: "127.0.0.1:9000"
+      fastcgi_index: "index.php"
+      includes: ["fastcgi.conf"]

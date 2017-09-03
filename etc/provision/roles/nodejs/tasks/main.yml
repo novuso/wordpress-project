@@ -1,0 +1,34 @@
+---
+- name: "build essential"
+  become: yes
+  apt:
+    name: "build-essential"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: "nvm repository"
+  git:
+    repo: "{{ nodejs_nvm_git_repo }}"
+    dest: "{{ nodejs_nvm_dir }}"
+
+- name: "nvm in path"
+  lineinfile:
+    dest: "/home/{{ ansible_user_id }}/.bashrc"
+    line: 'export PATH="$PATH:{{ nodejs_nvm_dir }}/bin"'
+    state: present
+
+- name: "source nvm bashrc"
+  lineinfile:
+    dest: "/home/{{ ansible_user_id }}/.bashrc"
+    line: "source {{ nodejs_nvm_dir }}/nvm.sh"
+    state: present
+
+- name: "node installed"
+  script: "node-install.sh {{ nodejs_version }} {{ nodejs_nvm_dir }}"
+  changed_when: false
+
+- name: "node version"
+  shell: "cat /home/{{ ansible_user_id }}/.node-version"
+  register: _node_ver
+  changed_when: false

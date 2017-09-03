@@ -1,0 +1,29 @@
+---
+# mysql_ppa_repo
+# - repo: "ondrej/mysql-5.6"                     #required
+#   state: present                               #default
+#   update_cache: yes                            #default
+#   validate_certs: yes                          #default
+mysql_ppa_repo: []
+# mysql_packages
+# - name: "mysql-server"                         #required
+#   state: present                               #default
+mysql_packages:
+- name: "mysql-server"
+- name: "python-mysqldb"
+mysql_remove_anon_user: true
+mysql_remove_test_db: true
+mysql_root_password: "root"
+# mysql_databases
+# - name: "dbname"                               #required
+#   state: present                               #default
+#   collation: "utf8_general_ci"                 #default
+#   encoding: "utf8"                             #default
+mysql_databases: []
+# mysql_users
+# - name: "user"                                 #required
+#   password: "secret"                           #required
+#   state: present                               #default
+#   host: "127.0.0.1"                            #default
+#   priv: "username.*:ALL"                       #default
+mysql_users: []

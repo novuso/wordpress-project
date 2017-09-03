@@ -1,0 +1,59 @@
+---
+- name: "openssl installed"
+  become: yes
+  apt:
+    name: "openssl"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: "keys directory"
+  become: yes
+  file:
+    dest: "{{ openssl_keys_path }}"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0700"
+
+- name: "certs directory"
+  become: yes
+  file:
+    dest: "{{ openssl_certs_path }}"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0755"
+
+- name: "self-signed certs"
+  become: yes
+  command: >
+    openssl req -x509 -nodes -days {{ item.days | default(3650) }}
+    -newkey rsa:{{ item.bits | default(2048) }}
+    -keyout {{ openssl_keys_path }}/{{ item.name }}.key
+    -out {{ openssl_certs_path }}/{{ item.name }}.crt
+    -subj "/C={{ item.country }}/ST={{ item.state }}/L={{ item.city }}/O={{ item.organization }}/OU={{ item.unit }}/CN={{ item.domain }}/emailAddress={{ item.email | default('') }}/"
+    creates={{ openssl_certs_path }}/{{ item.name }}.crt
+  with_items: "{{ openssl_self_signed }}"
+
+- name: "imported ssl keys"
+  become: yes
+  no_log: True
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ openssl_keys_path }}/{{ item.name }}.key"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_items: "{{ openssl_import_keys }}"
+
+- name: "imported ssl certs"
+  become: yes
+  no_log: True
+  copy:
+    content: "{{ item.content }}"
+    dest: "{{ openssl_certs_path }}/{{ item.name }}.crt"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_items: "{{ openssl_import_certs }}"

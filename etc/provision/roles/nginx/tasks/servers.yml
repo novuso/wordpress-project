@@ -1,0 +1,31 @@
+---
+- name: "server blocks"
+  become: yes
+  template:
+    src: "server.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ item.name }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_items: "{{ nginx_server_configs }}"
+  when: item.name is defined
+  notify: "nginx restart"
+
+- name: "server config symlinks"
+  become: yes
+  file:
+    src: "/etc/nginx/sites-available/{{ item.name }}"
+    dest: "/etc/nginx/sites-enabled/{{ item.name }}"
+    state: link
+    force: yes
+  with_items: "{{ nginx_server_configs }}"
+  when: nginx_create_servers and item.name is defined
+  notify: "nginx restart"
+
+- name: "default site"
+  become: yes
+  file:
+    dest: "/etc/nginx/sites-enabled/default"
+    state: absent
+  when: nginx_disable_default_server
+  notify: "nginx restart"

@@ -1,0 +1,40 @@
+---
+- name: "configuration directories"
+  become: yes
+  file:
+    dest: "/etc/nginx/{{ item }}"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  with_items:
+  - "sites-available"
+  - "sites-enabled"
+  - "conf.d"
+
+- name: "mime types"
+  become: yes
+  copy:
+    src: "mime.types"
+    dest: "/etc/nginx/mime.types"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: "h5bp config"
+  become: yes
+  copy:
+    src: "h5bp"
+    dest: "/etc/nginx/"
+    owner: "root"
+    group: "root"
+
+- name: "nginx main config"
+  become: yes
+  template:
+    src: "nginx.conf.j2"
+    dest: "/etc/nginx/nginx.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "nginx restart"

@@ -1,0 +1,27 @@
+---
+- name: "nginx repository"
+  become: yes
+  apt_repository:
+    repo: "ppa:{{ item.repo }}"
+    state: "{{ item.state | default('present') }}"
+    update_cache: "{{ item.update_cache | default('yes') }}"
+    validate_certs: "{{ item.validate_certs | default('yes') }}"
+  with_items: "{{ nginx_ppa_repo }}"
+  when: item.repo is defined
+
+- name: "nginx installed"
+  become: yes
+  apt:
+    name: "nginx"
+    state: present
+    update_cache: yes
+
+- name: "nginx enabled"
+  become: yes
+  service:
+    name: "nginx"
+    state: started
+    enabled: yes
+
+- include: "config.yml"
+- include: "servers.yml"

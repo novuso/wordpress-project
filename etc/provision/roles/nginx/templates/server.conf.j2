@@ -1,0 +1,210 @@
+# {{ ansible_managed }}
+{% for server in item.servers %}
+
+server {
+{% for listen in server.listen %}
+    listen {{ listen }};
+{% endfor %}
+{% if server.server_name is defined %}
+    server_name {{ server.server_name }};
+{% endif %}
+{% if server.rewrite is defined %}
+    rewrite {{ server.rewrite }};
+{% endif %}
+{% if server.set is defined %}
+    set {{ server.set }};
+{% endif %}
+{% if server.root is defined %}
+    root {{ server.root }};
+{% endif %}
+{% if server.index is defined %}
+    index {{ server.index }};
+{% endif %}
+{% if server.ssl is defined %}
+    ssl {{ server.ssl }};
+{% endif %}
+{% if server.ssl_certificate is defined %}
+    ssl_certificate {{ server.ssl_certificate }};
+{% endif %}
+{% if server.ssl_certificate_key is defined %}
+    ssl_certificate_key {{ server.ssl_certificate_key }};
+{% endif %}
+{% if server.charset is defined %}
+    charset {{ server.charset }};
+{% endif %}
+{% if server.access_log is defined %}
+    access_log {{ server.access_log }};
+{% endif %}
+{% if server.error_log is defined %}
+    error_log {{ server.error_log }};
+{% endif %}
+{% if server.log_not_found is defined %}
+    log_not_found {{ server.log_not_found }};
+{% endif %}
+{% if server.merge_slashes is defined %}
+    merge_slashes {{ server.merge_slashes }};
+{% endif %}
+{% if server.disable_symlinks is defined %}
+    disable_symlinks {{ server.disable_symlinks }};
+{% endif %}
+{% if server.etag is defined %}
+    etag {{ server.etag }};
+{% endif %}
+{% if server.chunked_transfer_encoding is defined %}
+    chunked_transfer_encoding {{ server.chunked_transfer_encoding }};
+{% endif %}
+{% if server.client_max_body_size is defined %}
+    client_max_body_size {{ server.client_max_body_size }};
+{% endif %}
+{% if server.default_type is defined %}
+    default_type {{ server.default_type }};
+{% endif %}
+{% if server.error_pages is defined %}
+{% for epage in server.error_pages %}
+    error_page {{ epage }};
+{% endfor %}
+{% endif %}
+{% if server.includes is defined %}
+{% for incl in server.includes %}
+    include {{ incl }};
+{% endfor %}
+{% endif %}
+{% if server.locations is defined %}
+{% for location in server.locations %}
+    location {{ location.match }} {
+{% if location.alias is defined %}
+        alias {{ location.alias }};
+{% endif %}
+{% if location.expires is defined %}
+        expires {{ location.expires }};
+{% endif %}
+{% if location.rewrite is defined %}
+        rewrite {{ location.rewrite }};
+{% endif %}
+{% if location.deny is defined %}
+{% for deny in location.deny %}
+        deny {{ deny }};
+{% endfor %}
+{% endif %}
+{% if location.allow is defined %}
+{% for allow in location.allow %}
+        allow {{ allow }};
+{% endfor %}
+{% endif %}
+{% if location.try_files is defined %}
+        try_files {{ location.try_files }};
+{% endif %}
+{% if location.access_log is defined %}
+        access_log {{ location.access_log }};
+{% endif %}
+{% if location.log_not_found is defined %}
+        log_not_found {{ location.log_not_found }};
+{% endif %}
+{% if location.disable_symlinks is defined %}
+        disable_symlinks {{ location.disable_symlinks }};
+{% endif %}
+{% if location.fastcgi_split_path_info is defined %}
+        fastcgi_split_path_info {{ location.fastcgi_split_path_info }};
+{% endif %}
+{% if location.fastcgi_pass is defined %}
+        fastcgi_pass {{ location.fastcgi_pass }};
+{% endif %}
+{% if location.fastcgi_index is defined %}
+        fastcgi_index {{ location.fastcgi_index }};
+{% endif %}
+{% if location.includes is defined %}
+{% for incl in location.includes %}
+        include {{ incl }};
+{% endfor %}
+{% endif %}
+{% if location.proxy_pass is defined %}
+        proxy_pass {{ location.proxy_pass }};
+{% endif %}
+{% if location.uwsgi_pass is defined %}
+        uwsgi_pass {{ location.uwsgi_pass }};
+{% endif %}
+{% if location.uwsgi_params is defined %}
+{% for param in location.uwsgi_params %}
+        uwsgi_param {{ param }};
+{% endfor %}
+{% endif %}
+{% if location.fastcgi_params is defined %}
+{% for param in location.fastcgi_params %}
+        fastcgi_param {{ param }};
+{% endfor %}
+{% endif %}
+{% if location.locations is defined %}
+{% for loc in location.locations %}
+        location {{ loc.match }} {
+{% if loc.alias is defined %}
+            alias {{ loc.alias }};
+{% endif %}
+{% if loc.expires is defined %}
+            expires {{ loc.expires }};
+{% endif %}
+{% if loc.rewrite is defined %}
+            rewrite {{ loc.rewrite }};
+{% endif %}
+{% if loc.deny is defined %}
+{% for deny in loc.deny %}
+            deny {{ deny }};
+{% endfor %}
+{% endif %}
+{% if loc.allow is defined %}
+{% for allow in loc.allow %}
+            allow {{ allow }};
+{% endfor %}
+{% endif %}
+{% if loc.try_files is defined %}
+            try_files {{ loc.try_files }};
+{% endif %}
+{% if loc.access_log is defined %}
+            access_log {{ loc.access_log }};
+{% endif %}
+{% if loc.log_not_found is defined %}
+            log_not_found {{ loc.log_not_found }};
+{% endif %}
+{% if loc.disable_symlinks is defined %}
+            disable_symlinks {{ loc.disable_symlinks }};
+{% endif %}
+{% if loc.fastcgi_split_path_info is defined %}
+            fastcgi_split_path_info {{ loc.fastcgi_split_path_info }};
+{% endif %}
+{% if loc.fastcgi_pass is defined %}
+            fastcgi_pass {{ loc.fastcgi_pass }};
+{% endif %}
+{% if loc.fastcgi_index is defined %}
+            fastcgi_index {{ loc.fastcgi_index }};
+{% endif %}
+{% if loc.includes is defined %}
+{% for incl in loc.includes %}
+            include {{ incl }};
+{% endfor %}
+{% endif %}
+{% if loc.proxy_pass is defined %}
+            proxy_pass {{ loc.proxy_pass }};
+{% endif %}
+{% if loc.uwsgi_pass is defined %}
+            uwsgi_pass {{ loc.uwsgi_pass }};
+{% endif %}
+{% if loc.uwsgi_params is defined %}
+{% for param in loc.uwsgi_params %}
+            uwsgi_param {{ param }};
+{% endfor %}
+{% endif %}
+{% if loc.fastcgi_params is defined %}
+{% for param in loc.fastcgi_params %}
+            fastcgi_param {{ param }};
+{% endfor %}
+{% endif %}
+        }
+{% endfor %}
+{% endif %}
+    }
+{% endfor %}
+{% endif %}
+{% if server.return is defined %}
+    return {{ server.return }};
+{% endif %}
+}
+{% endfor %}

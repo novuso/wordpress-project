@@ -1,0 +1,94 @@
+---
+- name: "mysql repository"
+  become: yes
+  apt_repository:
+    repo: "ppa:{{ item.repo }}"
+    state: "{{ item.state | default('present') }}"
+    update_cache: "{{ item.update_cache | default('yes') }}"
+    validate_certs: "{{ item.validate_certs | default('yes') }}"
+  with_items: "{{ mysql_ppa_repo }}"
+  when: item.repo is defined
+
+- name: "mysql installed"
+  become: yes
+  apt:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+    update_cache: yes
+    cache_valid_time: 3600
+  with_items: "{{ mysql_packages }}"
+  when: item.name is defined
+
+- name: "mysql enabled"
+  become: yes
+  service:
+    name: "mysql"
+    state: started
+    enabled: yes
+
+- name: "check for .my.cnf"
+  become: yes
+  stat:
+    path: "~/.my.cnf"
+  register: _mycnf_file
+
+- name: "mysql root password"
+  become: yes
+  mysql_user:
+    name: "root"
+    host: "{{ item }}"
+    password: "{{ mysql_root_password }}"
+  with_items:
+  - "127.0.0.1"
+  - "::1"
+  - "localhost"
+  when: _mycnf_file.stat.exists == false
+
+- name: "root password config"
+  become: yes
+  template:
+    src: "mycnf.j2"
+    dest: "~/.my.cnf"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+  notify: "mysql restart"
+
+- name: "anonymous user"
+  become: yes
+  mysql_user:
+    name: ""
+    state: absent
+  when: mysql_remove_anon_user
+  notify: "mysql restart"
+
+- name: "test database"
+  become: yes
+  mysql_db:
+    name: "test"
+    state: absent
+  when: mysql_remove_test_db
+  notify: "mysql restart"
+
+- name: "mysql databases"
+  become: yes
+  no_log: True
+  mysql_db:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+    collation: "{{ item.collation | default('utf8_general_ci') }}"
+    encoding: "{{ item.encoding | default('utf8') }}"
+  with_items: "{{ mysql_databases }}"
+  notify: "mysql restart"
+
+- name: "mysql users"
+  become: yes
+  no_log: True
+  mysql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    state: "{{ item.state | default('present') }}"
+    host: "{{ item.host | default('127.0.0.1') }}"
+    priv: "{{ item.priv | default(item.name + '.*:ALL') }}"
+  with_items: "{{ mysql_users }}"
+  notify: "mysql restart"

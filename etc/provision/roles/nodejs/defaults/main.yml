@@ -1,0 +1,4 @@
+---
+nodejs_version: "node"
+nodejs_nvm_git_repo: "https://github.com/creationix/nvm.git"
+nodejs_nvm_dir: "/home/{{ ansible_user_id }}/.nvm"
