@@ -1,5 +1,6 @@
 /.vagrant/
 /wp-config.php
+/etc/provision/playbook.retry
 /public/
 /vendor/
 /*.sublime-project
