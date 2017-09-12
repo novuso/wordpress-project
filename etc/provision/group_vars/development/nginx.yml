@@ -32,9 +32,9 @@ nginx_server_configs:
     - match: "/"
       locations:
       - match: "~* ^(.+)-(?:\\d+)\\.?(?:\\d+)?\\.?(?:\\d+)?\\.(js|css|png|jpe?g|gif|ico|cur|gz|g?zip|svg|svgz|mp4|ogg|flv|mov|ogv|webm|htc|pdf|rtf|txt|docx?|ppt)$"
-        try_files: "$uri $1.$2 /index.php$is_args$args"
+        try_files: "$uri $uri/ $1.$2 /index.php$is_args$args"
       - match: "/"
-        try_files: "$uri /index.php$is_args$args"
+        try_files: "$uri $uri/ /index.php$is_args$args"
     - match: "~ \\.php$"
       fastcgi_split_path_info: "^(.+\\.php)(/.+)$"
       fastcgi_pass: "127.0.0.1:9000"
